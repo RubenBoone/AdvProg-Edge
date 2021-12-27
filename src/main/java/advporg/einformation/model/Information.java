@@ -11,6 +11,9 @@ public class Information {
     private double entryFee;
     private double score;
 
+    public Information() {
+    }
+
     public Information(int id, int avgCustomers, String monuCode, String buildYear, double tourTime, double entryFee, double score) {
         this.id = id;
         this.avgCustomers = avgCustomers;

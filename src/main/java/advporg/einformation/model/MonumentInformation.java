@@ -4,6 +4,9 @@ public class MonumentInformation {
     private Monument monument;
     private Information information;
 
+    public MonumentInformation() {
+    }
+
     public MonumentInformation(Monument monument, Information information) {
         this.monument = monument;
         this.information = information;

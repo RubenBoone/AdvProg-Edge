@@ -14,7 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+@RestController
 public class MonumentInformationController {
 
     @Autowired
@@ -113,9 +115,16 @@ public class MonumentInformationController {
 
     private List<MonumentInformation> combineMonumentInformation(Monument[] monuments, Information[] informations) {
         ArrayList<MonumentInformation> mi = new ArrayList<MonumentInformation>();
-        for (Information info : informations) {
-            mi.add(new MonumentInformation((Monument) Arrays.stream(monuments).filter(monument -> monument.getMonuCode() == info.getMonuCode()), info));
+
+        for (Information information : informations) {
+            for (Monument monument :
+                    monuments) {
+                if (Objects.equals(information.getMonuCode(), monument.getMonuCode())) {
+                    mi.add(new MonumentInformation(monument, information));
+                }
+            }
         }
+
         return mi;
     }
 

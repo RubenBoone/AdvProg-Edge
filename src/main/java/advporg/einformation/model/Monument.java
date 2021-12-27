@@ -6,6 +6,9 @@ public class Monument {
     private String location;
     private String monuCode;
 
+    public Monument() {
+    }
+
     public Monument(int id, String name, String location, String monuCode) {
         this.id = id;
         this.name = name;
