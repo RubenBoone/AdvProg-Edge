@@ -5,15 +5,17 @@ public class Monument {
     private String name;
     private String location;
     private String monuCode;
+    private String buildYear;
 
     public Monument() {
     }
 
-    public Monument(int id, String name, String location, String monuCode) {
+    public Monument(int id, String name, String location, String monuCode, String buildYear) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.monuCode = monuCode;
+        this.buildYear = buildYear;
     }
 
     public void setId(int id) {
@@ -32,6 +34,10 @@ public class Monument {
         this.monuCode = monuCode;
     }
 
+    public void setBuildYear(String buildYear) {
+        this.buildYear = buildYear;
+    }
+
     public int getId() {
         return id;
     }
@@ -46,5 +52,9 @@ public class Monument {
 
     public String getMonuCode() {
         return monuCode;
+    }
+
+    public String getBuildYear() {
+        return buildYear;
     }
 }

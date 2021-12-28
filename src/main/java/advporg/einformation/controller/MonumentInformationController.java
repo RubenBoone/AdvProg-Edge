@@ -1,8 +1,6 @@
 package advporg.einformation.controller;
 
-import advporg.einformation.model.Information;
-import advporg.einformation.model.Monument;
-import advporg.einformation.model.MonumentInformation;
+import advporg.einformation.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -25,150 +23,201 @@ public class MonumentInformationController {
     @Value("${monumentservice.baseurl}")
     private String monumentServiceBaseUrl;
 
-    @Value("${informationservice.baseurl}")
-    private String informationServiceBaseUrl;
+    @Value("${tourservice.baseurl}")
+    private String tourServiceBaseUrl;
+
+    @Value("${ticketservice.baseurl}")
+    private String ticketServiceBaseUrl;
 
 
-    // Get top 3 monuments
-    @GetMapping("/monuments/top")
-    public List<MonumentInformation> getTopMonuments() {
-        Information[] informations = restTemplate.getForObject("http://" + informationServiceBaseUrl + "/info/top", Information[].class);
+    // Get top 3 most popular tours (amount of tickets sold)
+    @GetMapping("/monuments/popular")
+    public List<TourMonument> getPopularTours() {
+        Tour[] tourList = {new Tour(), new Tour(), new Tour()};
+        int first = 0, second = 0, third = 0;
 
-        // Check for 3 information objects
-        //if (informations.length == 3){
+        // Get all tours
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours", Tour[].class);
+        // Get all tickets
+        Ticket[] tickets = restTemplate.getForObject("http://" + ticketServiceBaseUrl + "/tickets", Ticket[].class);
+
+        for (Tour tour : tours) {
+            // count tickets
+            int ticketAmount = 0;
+            for (Ticket ticket : tickets) {
+                if (Objects.equals(tour.getTourCode(), ticket.getTourCode())) {
+                    ticketAmount++;
+                }
+            }
+            // check if tour has tickets
+            if (ticketAmount > first) {
+                third = second;
+                second = first;
+                first = ticketAmount;
+                tourList[2] = tourList[1];
+                tourList[1] = tourList[0];
+                tourList[0] = tour;
+            } else if (ticketAmount > second) {
+                third = second;
+                second = ticketAmount;
+                tourList[2] = tourList[1];
+                tourList[1] = tour;
+            } else if (ticketAmount > third) {
+                third = ticketAmount;
+                tourList[2] = tour;
+            } else {
+                continue;
+            }
+        }
 
         // Get monuCodes
-        List<String> monuCodes = this.getMonuCodes(informations);
-
+        List<String> monuCodes = this.getMonuCodes(tourList);
         // Set url params
         String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
         // Get monuments with params
         Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        // Combine tours and monuments
+        return this.combineTourMonument(tourList, monuments);
+    }
 
-        //if (monuments.length == 3){
-        // Make 3 new MonumentInformation objects to return
-        List<MonumentInformation> monumentInformation = this.combineMonumentInformation(monuments, informations);
-
-        return monumentInformation;
-        //}
-        //}
+    // Get top 3 best tours (tour rating)
+    @GetMapping("/monuments/popular")
+    public List<TourMonument> getBestTours() {
+        // Get best tours
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/best", Tour[].class);
+        // Get monuCodes
+        List<String> monuCodes = this.getMonuCodes(tours);
+        // Set url params
+        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
+        // Get monuments with params
+        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        // Combine tours and monuments
+        return this.combineTourMonument(tours, monuments);
     }
 
     // Get oldest monuments
     @GetMapping("/monuments/oldest")
-    public List<MonumentInformation> getOldestMonuments() {
-        Information[] informations = restTemplate.getForObject("http://" + informationServiceBaseUrl + "/info/old", Information[].class);
-
-        // Get monuCodes
-        List<String> monuCodes = this.getMonuCodes(informations);
-
-        // Get monuments
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments", Monument[].class);
-
-        // Make new MonumentInformation objects to return
-        List<MonumentInformation> monumentInformation = this.combineMonumentInformation(monuments, informations);
-
-        return monumentInformation;
+    public Monument[] getOldestMonuments() {
+        // Get oldest monuments
+        return restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments/old", Monument[].class);
     }
 
     // Get newest monuments
     @GetMapping("/monuments/newest")
-    public List<MonumentInformation> getNewestMonuments() {
-        Information[] informations = restTemplate.getForObject("http://" + informationServiceBaseUrl + "/info/new", Information[].class);
-
-        // Get monuCodes
-        List<String> monuCodes = this.getMonuCodes(informations);
-
-        // Get monuments
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments", Monument[].class);
-
-        // Make new MonumentInformation objects to return
-        List<MonumentInformation> monumentInformation = this.combineMonumentInformation(monuments, informations);
-
-        return monumentInformation;
+    public Monument[] getNewestMonuments() {
+        // Get newest monuments
+        return restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments/new", Monument[].class);
     }
 
-    // Get monuments by price
-    @GetMapping("/monuments/{price}")
-    public List<MonumentInformation> getMonumentsByPrice(@PathVariable Double price) {
-        Information[] informations = restTemplate.getForObject("http://" + informationServiceBaseUrl + "/info/price/{price}", Information[].class, price);
-
+    // Get tours by price
+    @GetMapping("/tours/{price}")
+    public List<TourMonument> getToursByPrice(@PathVariable Double price) {
+        // Get tours by price
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/{price}", Tour[].class, price);
         // Get monuCodes
-        List<String> monuCodes = this.getMonuCodes(informations);
-
-        // Get monuments
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments", Monument[].class);
-
-        // Make new MonumentInformation objects to return
-        List<MonumentInformation> monumentInformation = this.combineMonumentInformation(monuments, informations);
-
-        return monumentInformation;
+        List<String> monuCodes = this.getMonuCodes(tours);
+        // Set url params
+        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
+        // Get monuments with params
+        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        return this.combineTourMonument(tours, monuments);
     }
 
-    private List<String> getMonuCodes(Information[] informations) {
+    private List<String> getMonuCodes(Tour[] tours) {
         List<String> monuCodes = new ArrayList<String>();
-        for (Information info : informations) {
-            monuCodes.add(info.getMonuCode());
+        for (Tour tour : tours) {
+            monuCodes.add(tour.getMonuCode());
         }
         return monuCodes;
     }
 
-    private List<MonumentInformation> combineMonumentInformation(Monument[] monuments, Information[] informations) {
-        ArrayList<MonumentInformation> mi = new ArrayList<MonumentInformation>();
+    private List<TourMonument> combineTourMonument(Tour[] tours, Monument[] monuments) {
+        ArrayList<TourMonument> tm = new ArrayList<TourMonument>();
 
-        for (Information information : informations) {
-            for (Monument monument :
-                    monuments) {
-                if (Objects.equals(information.getMonuCode(), monument.getMonuCode())) {
-                    mi.add(new MonumentInformation(monument, information));
+        for (Tour tour : tours) {
+            for (Monument monument : monuments) {
+                if (Objects.equals(tour.getMonuCode(), monument.getMonuCode())) {
+                    tm.add(new TourMonument(tour, monument));
                 }
             }
         }
 
-        return mi;
+        return tm;
     }
 
-    // Create new monument with information
+    // Create new monument
     @PostMapping("/monuments")
-    public MonumentInformation addMonument(@RequestBody MonumentInformation monumentInformation) {
-        Information information = restTemplate.postForObject("http://" + informationServiceBaseUrl + "/info", monumentInformation.getInformation(), Information.class);
-        Monument monument = restTemplate.postForObject("http://" + monumentServiceBaseUrl + "/monuments", monumentInformation.getMonument(), Monument.class);
-
-        return new MonumentInformation(monument, information);
+    public Monument addMonument(@RequestBody Monument monument) {
+        return restTemplate.postForObject("http://" + monumentServiceBaseUrl + "/monuments", monument, Monument.class);
     }
 
-    // Edit monument with information
+    // Create new tour
+    @PostMapping("/tours")
+    public Tour addTour(@RequestBody Tour tour) {
+        return restTemplate.postForObject("http://" + tourServiceBaseUrl + "/tours", tour, Tour.class);
+    }
+
+    // Create new ticket
+    @PostMapping("/tickets")
+    public Ticket addTicket(@RequestBody Ticket ticket) {
+        return restTemplate.postForObject("http://" + ticketServiceBaseUrl + "/tickets", ticket, Ticket.class);
+    }
+
+    // Edit monument
     @PutMapping("/monuments")
-    public MonumentInformation editMonument(@RequestBody Integer monumentId, @RequestBody Integer informationId, @RequestBody MonumentInformation monumentInformation) {
-
-        // Get information
-        Information information = restTemplate.getForObject("http://" + informationServiceBaseUrl + "/info/{informationId}", Information.class, informationId);
-        // Put information
-        ResponseEntity<Information> responseEntityInformation = restTemplate.exchange(
-                "http://" + informationServiceBaseUrl + "/info",
-                HttpMethod.PUT, new HttpEntity<>(information), Information.class);
-        // get response from PUT
-        Information newInformation = responseEntityInformation.getBody();
-
-
-        // Get monument
-        Monument monument = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments/{monumentId}", Monument.class, monumentId);
-        // Put monument
-        ResponseEntity<Monument> responseEntityMonument = restTemplate.exchange(
-                "http://" + monumentServiceBaseUrl + "/monument",
+    public Monument editMonument(@RequestBody Monument monument) {
+        // PUT
+        ResponseEntity<Monument> responseEntityInformation = restTemplate.exchange(
+                "http://" + monumentServiceBaseUrl + "/monuments",
                 HttpMethod.PUT, new HttpEntity<>(monument), Monument.class);
-        // get response from PUT
-        Monument newMonument = responseEntityMonument.getBody();
-
-        return new MonumentInformation(newMonument, newInformation);
+        // return response from PUT
+        return responseEntityInformation.getBody();
     }
 
-    // Delete monument with information
-    @DeleteMapping("/monuments/{monuCode}")
-    public ResponseEntity deleteMonument(@PathVariable String monuCode){
-        restTemplate.delete("http://" + monumentServiceBaseUrl + "/monuments/" + monuCode);
-        restTemplate.delete("http://" + informationServiceBaseUrl + "/info/" + monuCode);
+    // Edit tour
+    @PutMapping("/tours")
+    public Tour editTour(@RequestBody Tour tour) {
+        // PUT
+        ResponseEntity<Tour> responseEntityInformation = restTemplate.exchange(
+                "http://" + tourServiceBaseUrl + "/tours",
+                HttpMethod.PUT, new HttpEntity<>(tour), Tour.class);
+        // return response from PUT
+        return responseEntityInformation.getBody();
+    }
 
+    // Edit ticket
+    @PutMapping("/tickets")
+    public Ticket editTicket(@RequestBody Ticket ticket) {
+        // PUT
+        ResponseEntity<Ticket> responseEntityInformation = restTemplate.exchange(
+                "http://" + ticketServiceBaseUrl + "/tickets",
+                HttpMethod.PUT, new HttpEntity<>(ticket), Ticket.class);
+        // return response from PUT
+        return responseEntityInformation.getBody();
+    }
+
+    // Delete monument
+    @DeleteMapping("/monuments/{monuCode}")
+    public ResponseEntity deleteMonument(@PathVariable String monuCode) {
+        // Set url params
+        String params = "?monuCode=" + monuCode;
+        // Get tours with params
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours" + params, Tour[].class);
+
+        // Delete all tickets from each tour
+        for (Tour tour : tours) {
+            restTemplate.delete("http://" + ticketServiceBaseUrl + "/tickets/" + tour.getTourCode());
+        }
+        restTemplate.delete("http://" + tourServiceBaseUrl + "/tours/" + monuCode);
+        restTemplate.delete("http://" + monumentServiceBaseUrl + "/monuments/" + monuCode);
+        return ResponseEntity.ok().build();
+    }
+
+    // Delete tour
+    @DeleteMapping("/tours/{tourCode}")
+    public ResponseEntity deleteTour(@PathVariable String tourCode) {
+        restTemplate.delete("http://" + ticketServiceBaseUrl + "/tickets/" + tourCode);
+        restTemplate.delete("http://" + tourServiceBaseUrl + "/tours/" + tourCode);
         return ResponseEntity.ok().build();
     }
 }
