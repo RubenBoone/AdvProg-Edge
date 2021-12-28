@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +30,7 @@ public class MonumentInformationController {
 
 
     // Get top 3 most popular tours (amount of tickets sold)
-    @GetMapping("/monuments/popular")
+    @GetMapping("/tours/popular")
     public List<TourMonument> getPopularTours() {
         Tour[] tourList = {new Tour(), new Tour(), new Tour()};
         int first = 0, second = 0, third = 0;
@@ -81,7 +80,7 @@ public class MonumentInformationController {
     }
 
     // Get top 3 best tours (tour rating)
-    @GetMapping("/monuments/popular")
+    @GetMapping("/tours/best")
     public List<TourMonument> getBestTours() {
         // Get best tours
         Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/best", Tour[].class);
