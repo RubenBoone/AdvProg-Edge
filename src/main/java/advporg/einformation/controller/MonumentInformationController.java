@@ -71,10 +71,8 @@ public class MonumentInformationController {
 
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tourList);
-        // Set url params
-        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
         // Get monuments with params
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + this.getUrlParams(monuCodes), Monument[].class);
         // Combine tours and monuments
         return this.combineTourMonument(tourList, monuments);
     }
@@ -86,10 +84,8 @@ public class MonumentInformationController {
         Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/best", Tour[].class);
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tours);
-        // Set url params
-        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
         // Get monuments with params
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + this.getUrlParams(monuCodes), Monument[].class);
         // Combine tours and monuments
         return this.combineTourMonument(tours, monuments);
     }
@@ -112,13 +108,11 @@ public class MonumentInformationController {
     @GetMapping("/tours/{price}")
     public List<TourMonument> getToursByPrice(@PathVariable Double price) {
         // Get tours by price
-        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/{price}", Tour[].class, price);
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/price/{price}", Tour[].class, price);
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tours);
-        // Set url params
-        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
         // Get monuments with params
-        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
+        Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + this.getUrlParams(monuCodes), Monument[].class);
         return this.combineTourMonument(tours, monuments);
     }
 
@@ -142,6 +136,17 @@ public class MonumentInformationController {
         }
 
         return tm;
+    }
+
+    private String getUrlParams(List<String> monuCodes){
+        String params = "";
+        if (monuCodes.size() != 0){
+            params = "?monuCode=" + monuCodes.get(0);
+            for (int i = 0; i < monuCodes.size(); i++){
+                params += ("&monuCode=" + monuCodes.get(i));
+            }
+        }
+        return params;
     }
 
     // Create new monument
