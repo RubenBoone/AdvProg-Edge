@@ -10,7 +10,7 @@ rondleidingen bevatten, deze worden gekoppeld aan elkaar met behulp van een code
 ticket wordt op dezelfde manier gekoppeld aan een rondleiding (TourCode).
 
 ## Diagram microservices architectuur :
-![Overzicht endpoints](Summary.png)
+![Overzicht endpoints](Summary.jpg)
 
 ## SwaggerUI EdgeService:
 ![Overzicht endpoints](SwaggerUI.png)
