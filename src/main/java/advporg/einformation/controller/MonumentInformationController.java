@@ -64,8 +64,6 @@ public class MonumentInformationController {
             } else if (ticketAmount > third) {
                 third = ticketAmount;
                 tourList[2] = tour;
-            } else {
-                continue;
             }
         }
 
@@ -111,15 +109,13 @@ public class MonumentInformationController {
         Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/price/{price}", Tour[].class, price);
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tours);
-        // Set url params
-        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1);
         // Get monuments with params
         Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + this.getUrlParams(monuCodes), Monument[].class);
         return this.combineTourMonument(tours, monuments);
     }
 
     private List<String> getMonuCodes(Tour[] tours) {
-        List<String> monuCodes = new ArrayList<String>();
+        List<String> monuCodes = new ArrayList<>();
         for (Tour tour : tours) {
             monuCodes.add(tour.getMonuCode());
         }
@@ -127,7 +123,7 @@ public class MonumentInformationController {
     }
 
     private List<TourMonument> combineTourMonument(Tour[] tours, Monument[] monuments) {
-        ArrayList<TourMonument> tm = new ArrayList<TourMonument>();
+        ArrayList<TourMonument> tm = new ArrayList<>();
 
         for (Tour tour : tours) {
             for (Monument monument : monuments) {
@@ -141,14 +137,16 @@ public class MonumentInformationController {
     }
 
     private String getUrlParams(List<String> monuCodes){
-        String params = "";
-        if (monuCodes.size() != 0){
-            params = "?monuCode=" + monuCodes.get(0);
+        String str = "";
+        if (!monuCodes.isEmpty()){
+            StringBuilder bld = new StringBuilder();
+            bld.append("?monuCode=").append(monuCodes.get(0));
             for (int i = 0; i < monuCodes.size(); i++){
-                params += ("&monuCode=" + monuCodes.get(i));
+                bld.append("&monuCode=").append(monuCodes.get(i));
             }
+            str = bld.toString();
         }
-        return params;
+        return str;
     }
 
     // Create new monument
@@ -193,7 +191,7 @@ public class MonumentInformationController {
 
     // Delete monument
     @DeleteMapping("/monuments/{monuCode}")
-    public ResponseEntity deleteMonument(@PathVariable String monuCode) {
+    public ResponseEntity<Monument> deleteMonument(@PathVariable String monuCode) {
         // Set url params
         String params = "?monuCode=" + monuCode;
         // Get tours with params
@@ -210,7 +208,7 @@ public class MonumentInformationController {
 
     // Delete tour
     @DeleteMapping("/tours/{tourCode}")
-    public ResponseEntity deleteTour(@PathVariable String tourCode) {
+    public ResponseEntity<Tour> deleteTour(@PathVariable String tourCode) {
         restTemplate.delete("http://" + ticketServiceBaseUrl + "/tickets/" + tourCode);
         restTemplate.delete("http://" + tourServiceBaseUrl + "/tours/" + tourCode);
         return ResponseEntity.ok().build();
