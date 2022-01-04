@@ -1,6 +1,6 @@
 # AdvProg-Edge
 
-### Korte beschrijving:
+## Korte beschrijving:
 Wij hebben voor het thema van **monumenten** en **rondleidingen** gekozen. Hier bovenop hebben we nog een 
 extra service toegevoegd, namelijk **tickets**. Een bezoeker kan een ticket aankopen die bij een
 rondleiding hoort. Deze rondeleiding behoort tot een monument. 
