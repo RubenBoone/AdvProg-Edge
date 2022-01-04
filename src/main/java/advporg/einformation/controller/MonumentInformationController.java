@@ -189,17 +189,6 @@ public class MonumentInformationController {
         return responseEntityInformation.getBody();
     }
 
-    // Edit ticket
-    @PutMapping("/tickets")
-    public Ticket editTicket(@RequestBody Ticket ticket) {
-        // PUT
-        ResponseEntity<Ticket> responseEntityInformation = restTemplate.exchange(
-                "http://" + ticketServiceBaseUrl + "/tickets",
-                HttpMethod.PUT, new HttpEntity<>(ticket), Ticket.class);
-        // return response from PUT
-        return responseEntityInformation.getBody();
-    }
-
     // Delete monument
     @DeleteMapping("/monuments/{monuCode}")
     public ResponseEntity deleteMonument(@PathVariable String monuCode) {
