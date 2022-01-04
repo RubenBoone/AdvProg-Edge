@@ -83,7 +83,7 @@ public class MonumentInformationController {
     @GetMapping("/tours/best")
     public List<TourMonument> getBestTours() {
         // Get best tours
-        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/best", Tour[].class);
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/top", Tour[].class);
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tours);
         // Set url params
@@ -112,11 +112,11 @@ public class MonumentInformationController {
     @GetMapping("/tours/{price}")
     public List<TourMonument> getToursByPrice(@PathVariable Double price) {
         // Get tours by price
-        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/{price}", Tour[].class, price);
+        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/price/{price}", Tour[].class, price);
         // Get monuCodes
         List<String> monuCodes = this.getMonuCodes(tours);
         // Set url params
-        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1) + "&monuCode=" + monuCodes.get(2);
+        String params = "?monuCode=" + monuCodes.get(0) + "&monuCode=" + monuCodes.get(1);
         // Get monuments with params
         Monument[] monuments = restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments" + params, Monument[].class);
         return this.combineTourMonument(tours, monuments);
