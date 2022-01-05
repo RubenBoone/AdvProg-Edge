@@ -5,9 +5,10 @@ metadata:
   labels:                         # Labels that will be applied to the service
     app: tour-service
 spec:
+  type: NodePort
   ports:
-    - port: 27017
-      targetPort: 12345
+    - port: 12345
+      nodePort: 12345
   selector:                       # Selects any Pod with labels `app=review-service,tier=mongo`
     app: tour-service
     tier: mongo
