@@ -6,8 +6,7 @@ metadata:
     app: tour-service
 spec:
   ports:
-    - port: 27017
-      targetPort: 12345
+    - port: 12345
   selector:                       # Selects any Pod with labels `app=review-service,tier=mongo`
     app: tour-service
     tier: mongo
