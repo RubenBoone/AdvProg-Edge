@@ -70,6 +70,8 @@ spec:
           value: "ticket-service-postgres"
         - name: POSTGRES_DB_PORT
           value: "5432"
+        - name: POSTGRES_PASSWORD
+          value: fred
 ---
 apiVersion: v1                   # API version
 kind: Service                    # Type of the kubernetes resource
