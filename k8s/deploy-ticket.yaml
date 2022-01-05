@@ -37,9 +37,9 @@ spec:
         ports:
         - containerPort: 5432        # The port that the container exposes       
           name: postgres
-      env:
-      - name: POSTGRES_PASSWORD
-        value: fred
+        env:
+        - name: POSTGRES_PASSWORD
+          value: fred
 ---
 apiVersion: apps/v1           # API version
 kind: Deployment              # Type of kubernetes resource
