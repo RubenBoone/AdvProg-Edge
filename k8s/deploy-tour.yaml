@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:                         # Forward incoming connections on port 8053 to the target port 8053
   - name: http
-    port: 1245
+    port: 12345
     targetPort: 27017
   selector:                       # Selects any Pod with labels `app=review-service,tier=mongo`
     app: tour-service
