@@ -5,10 +5,8 @@ metadata:
   labels:                         # Labels that will be applied to the service
     app: tour-service
 spec:
-  type: NodePort
   ports:
     - port: 12345
-      nodePort: 12345
   selector:                       # Selects any Pod with labels `app=review-service,tier=mongo`
     app: tour-service
     tier: mongo
@@ -37,7 +35,8 @@ spec:
       - image: mongo                # The container image
         name: mongo
         ports:
-        - containerPort: 12345        # The port that the container exposes       
+        - containerPort: 12345        # The port that the container exposes
+          port: 12345       
           name: mongo
 ---
 apiVersion: apps/v1           # API version
