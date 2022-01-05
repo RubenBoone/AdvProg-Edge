@@ -36,7 +36,7 @@ spec:
         name: mongo
         ports:
         - containerPort: 12345
-          port: 12345        # The port that the container exposes   
+          targetPort: 12345        # The port that the container exposes   
           name: mongo
 ---
 apiVersion: apps/v1           # API version
