@@ -35,7 +35,7 @@ spec:
       - image: mongo                # The container image
         name: mongo
         ports:
-        - containerPort: 27017        # The port that the container exposes       
+        - containerPort: 12345        # The port that the container exposes       
           name: mongo
 ---
 apiVersion: apps/v1           # API version
