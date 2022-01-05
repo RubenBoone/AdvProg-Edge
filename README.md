@@ -15,10 +15,15 @@ ticket wordt op dezelfde manier gekoppeld aan een rondleiding (TourCode).
 ## SwaggerUI EdgeService:
 ![Overzicht endpoints](SwaggerUI.png)
 
+## Code Coverage:
+![Overzicht endpoints](CoverageMonument.png)
+
 ### Github Repo's:
 - [Edge service](https://github.com/RubenBoone/AdvProg-Edge)
 - [Monument microservice](https://github.com/RubenBoone/AdvProg-Monument)
 - [Tour microservice](https://github.com/RubenBoone/AdvProg-Tour)
 - [Ticket microservice](https://github.com/RubenBoone/AdvProg-Ticket)
 - [Angular Frontend](https://github.com/PeetersJ2010/APT-Frontend)
+
+
 
