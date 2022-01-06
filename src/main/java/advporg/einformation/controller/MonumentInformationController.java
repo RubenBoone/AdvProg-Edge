@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@CrossOrigin
 @RestController
 public class MonumentInformationController {
 
@@ -27,6 +28,41 @@ public class MonumentInformationController {
 
     @Value("${ticketservice.baseurl}")
     private String ticketServiceBaseUrl;
+
+    // Get all monuments
+    @GetMapping("/monuments")
+    public Monument[] getMonuments() {
+        // Get monuments
+        return restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments", Monument[].class);
+    }
+
+    // Get 1 monument
+    @GetMapping("/monuments/{monuCode}")
+    public Monument getMonument(@PathVariable String monuCode) {
+        // Get monument
+        return restTemplate.getForObject("http://" + monumentServiceBaseUrl + "/monuments/{monuCode}", Monument.class, monuCode);
+    }
+
+    // Get all tours
+    @GetMapping("/tours")
+    public Tour[] getTours() {
+        // Get tours
+        return restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours", Tour[].class);
+    }
+
+    // Get 1 tour
+    @GetMapping("/tours/{tourCode}")
+    public Tour getTour(@PathVariable String tourCode) {
+        // Get tour
+        return restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/{tourCode}", Tour.class, tourCode);
+    }
+
+    // Get all tickets
+    @GetMapping("/tickets")
+    public Ticket[] getTickets() {
+        // Get tickets
+        return restTemplate.getForObject("http://" + ticketServiceBaseUrl + "/tickets", Ticket[].class);
+    }
 
 
     // Get top 3 most popular tours (amount of tickets sold)
@@ -103,7 +139,7 @@ public class MonumentInformationController {
     }
 
     // Get tours by price
-    @GetMapping("/tours/{price}")
+    @GetMapping("/tours/price/{price}")
     public List<TourMonument> getToursByPrice(@PathVariable Double price) {
         // Get tours by price
         Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours/price/{price}", Tour[].class, price);
@@ -129,6 +165,7 @@ public class MonumentInformationController {
             for (Monument monument : monuments) {
                 if (Objects.equals(tour.getMonuCode(), monument.getMonuCode())) {
                     tm.add(new TourMonument(tour, monument));
+                    break;
                 }
             }
         }
@@ -141,7 +178,7 @@ public class MonumentInformationController {
         if (!monuCodes.isEmpty()){
             StringBuilder bld = new StringBuilder();
             bld.append("?monuCode=").append(monuCodes.get(0));
-            for (int i = 0; i < monuCodes.size(); i++){
+            for (int i = 0; i < monuCodes.size() - 1; i++){
                 bld.append("&monuCode=").append(monuCodes.get(i));
             }
             str = bld.toString();
@@ -192,16 +229,6 @@ public class MonumentInformationController {
     // Delete monument
     @DeleteMapping("/monuments/{monuCode}")
     public ResponseEntity<Monument> deleteMonument(@PathVariable String monuCode) {
-        // Set url params
-        String params = "?monuCode=" + monuCode;
-        // Get tours with params
-        Tour[] tours = restTemplate.getForObject("http://" + tourServiceBaseUrl + "/tours" + params, Tour[].class);
-
-        // Delete all tickets from each tour
-        for (Tour tour : tours) {
-            restTemplate.delete("http://" + ticketServiceBaseUrl + "/tickets/" + tour.getTourCode());
-        }
-        restTemplate.delete("http://" + tourServiceBaseUrl + "/tours/" + monuCode);
         restTemplate.delete("http://" + monumentServiceBaseUrl + "/monuments/" + monuCode);
         return ResponseEntity.ok().build();
     }
@@ -209,7 +236,6 @@ public class MonumentInformationController {
     // Delete tour
     @DeleteMapping("/tours/{tourCode}")
     public ResponseEntity<Tour> deleteTour(@PathVariable String tourCode) {
-        restTemplate.delete("http://" + ticketServiceBaseUrl + "/tickets/" + tourCode);
         restTemplate.delete("http://" + tourServiceBaseUrl + "/tours/" + tourCode);
         return ResponseEntity.ok().build();
     }

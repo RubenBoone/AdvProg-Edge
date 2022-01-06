@@ -10,12 +10,12 @@ public class Tour {
     private double score;
     private String title;
     private String description;
-    private int avgCustomers;
+    private int avgCustomer;
 
     public Tour() {
     }
 
-    public Tour(int id, String monuCode, String tourCode, double tourTime, double entryFee, double score, String title, String description, int avgCustomers) {
+    public Tour(int id, String monuCode, String tourCode, double tourTime, double entryFee, double score, String title, String description, int avgCustomer) {
         this.id = id;
         this.monuCode = monuCode;
         this.tourCode = tourCode;
@@ -24,7 +24,7 @@ public class Tour {
         this.score = score;
         this.title = title;
         this.description = description;
-        this.avgCustomers = avgCustomers;
+        this.avgCustomer = avgCustomer;
     }
 
     public void setId(int id) {
@@ -59,8 +59,8 @@ public class Tour {
         this.description = description;
     }
 
-    public void setAvgCustomers(int avgCustomers) {
-        this.avgCustomers = avgCustomers;
+    public void setAvgCustomers(int avgCustomer) {
+        this.avgCustomer = avgCustomer;
     }
 
     public int getId() {
@@ -95,7 +95,7 @@ public class Tour {
         return description;
     }
 
-    public int getAvgCustomers() {
-        return avgCustomers;
+    public int getAvgCustomer() {
+        return avgCustomer;
     }
 }

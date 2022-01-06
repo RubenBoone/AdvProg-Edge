@@ -10,13 +10,23 @@ rondleidingen bevatten, deze worden gekoppeld aan elkaar met behulp van een code
 ticket wordt op dezelfde manier gekoppeld aan een rondleiding (TourCode).
 
 ## Diagram microservices architectuur :
-![Overzicht endpoints](Summary.jpg)
+![](Summary.jpg)
 
 ## SwaggerUI EdgeService:
 ![Overzicht endpoints](SwaggerUI.png)
 
 ## Code Coverage:
-![Overzicht endpoints](CoverageMonument.png)
+### EdgeService Tests
+![](CoverageEdge.png)
+
+POST,PUT,DELETE niet inbegrepen*
+### MonumentService Tests:
+![](CoverageMonument.png)
+### TourService Tests:
+![](CoverageTour.png)
+### TicketService Tests:
+![](CoverageTicket.png)
+
 
 ### Github Repo's:
 - [Edge service](https://github.com/RubenBoone/AdvProg-Edge)
