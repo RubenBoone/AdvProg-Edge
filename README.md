@@ -17,7 +17,7 @@ ticket wordt op dezelfde manier gekoppeld aan een rondleiding (TourCode).
 
 ## Code Coverage:
 ### EdgeService Tests
-![](CoverageEdge.png)
+![](images/CoverageEdge.png)
 
 POST,PUT,DELETE niet inbegrepen*
 ### MonumentService Tests:
